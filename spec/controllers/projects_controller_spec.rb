@@ -40,6 +40,21 @@ RSpec.describe ProjectsController, :type => :controller do
 	    end
 
 	  end
+
+	  context "with incorrect input" do 
+      it "does not create the project" do 
+        post :create, project:{name: ""}
+        expect(Project.count).to eq(0)
+      end
+      it "sets an error message" do 
+        post :create, project:{name: ""}
+        expect(flash[:alert]).not_to be_empty
+      end
+      it "renders the new template" do 
+        post :create, project:{name: ""}
+        expect(response).to render_template :new
+      end
+	  end
 	end
 
 end
