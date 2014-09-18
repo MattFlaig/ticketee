@@ -89,4 +89,20 @@ RSpec.describe ProjectsController, :type => :controller do
     end
 	end
 
+	describe "DELETE#destroy" do 
+		before do
+			pro1 = FactoryGirl.create(:project)
+      delete :destroy, {id: pro1, project: {name: pro1.name}} 
+    end
+    it "deletes the project" do 
+      expect(Project.count).to eq(0)
+    end
+    it "sets a notice" do 
+      expect(flash[:notice]).to be_present
+    end
+    it "redirects to index" do 
+      expect(response).to redirect_to projects_path
+    end 
+	end
+
 end
