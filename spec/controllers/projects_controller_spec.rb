@@ -17,11 +17,25 @@ RSpec.describe ProjectsController, :type => :controller do
 	end
 
 	describe "GET#show" do 
-		it"set the project variable" do
-			pro1 = FactoryGirl.create(:project)
-	    get :show, id: pro1.id
-	    expect(assigns(:project)).to eq(pro1)
+		context "with existing projects" do
+			it"set the project variable" do
+				pro1 = FactoryGirl.create(:project)
+		    get :show, id: pro1.id
+		    expect(assigns(:project)).to eq(pro1)
+	    end
+	  end
+	  context "with non-existing projects" do 
+      it "displays an error for a missing project" do
+      	get :show, id: "not-here"
+        message = "The project you were looking for could not be found."
+        expect(flash[:alert]).to eq(message)
+      end
+      it "redirects to index" do
+        get :show, id: "not-here"
+        expect(response).to redirect_to(projects_path)
+      end
     end
+
 	end
 
 	describe "POST#create" do
