@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe ProjectsController, :type => :controller do
 	describe "GET#index" do 
 		it "sets the projects variable" do 
-      pro1 = Project.create(name: "pro1")
-      pro2 = Project.create(name: "pro2")
+      pro1 = FactoryGirl.create(:project)
+      pro2 = FactoryGirl.create(:project)
       get :index
       expect(Project.all).to match_array([pro1,pro2])
 		end
@@ -18,7 +18,7 @@ RSpec.describe ProjectsController, :type => :controller do
 
 	describe "GET#show" do 
 		it"set the project variable" do
-			pro1 = Project.create(name: "pro1")
+			pro1 = FactoryGirl.create(:project)
 	    get :show, id: pro1.id
 	    expect(assigns(:project)).to eq(pro1)
     end
@@ -26,32 +26,35 @@ RSpec.describe ProjectsController, :type => :controller do
 
 	describe "POST#create" do
 	  context "with correct input" do 
+
+	  	before do 
+        pro1 = FactoryGirl.attributes_for(:project)
+	      post :create, project: pro1
+	  	end
+
 	    it "creates a new project" do 
-	      post :create, project:{name: "pro1"}
 	      expect(Project.count).to eq(1)
 	    end
 	    it "gives a success message" do 
-        post :create, project:{name: "pro1"}
         expect(flash[:notice]).to be_present
 	    end
 	    it "redirects to show" do 
-	    	post :create, project:{name: "pro1"}
 	    	expect(response).to redirect_to '/projects/1'
 	    end
 
 	  end
 
 	  context "with incorrect input" do 
-      it "does not create the project" do 
+	  	before do 
         post :create, project:{name: ""}
+	  	end
+      it "does not create the project" do 
         expect(Project.count).to eq(0)
       end
       it "sets an error message" do 
-        post :create, project:{name: ""}
         expect(flash[:alert]).not_to be_empty
       end
       it "renders the new template" do 
-        post :create, project:{name: ""}
         expect(response).to render_template :new
       end
 	  end

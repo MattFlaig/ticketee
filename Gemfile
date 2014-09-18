@@ -22,4 +22,5 @@ group :test do
 	gem 'capybara'
 	gem 'database_cleaner'
 	gem 'shoulda-matchers'
+	gem "factory_girl_rails", "~> 4.0"
 end
