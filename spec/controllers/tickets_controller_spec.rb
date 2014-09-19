@@ -89,4 +89,21 @@ RSpec.describe TicketsController, :type => :controller do
       end
     end
   end
+
+  describe "DELETE#destroy" do 
+  	let (:pro1) {FactoryGirl.create(:project)}
+  	before do 
+      tic1 = FactoryGirl.create(:ticket, project_id: pro1.id)
+      delete :destroy, {id: tic1, ticket: {title: tic1.title, description: tic1.description}, project_id: tic1.project_id} 
+    end
+    it "deletes the record" do 
+      expect(Ticket.count).to eq(0)
+    end
+    it "sets a message that the record was deleted" do 
+      expect(flash[:notice]).to eq("Ticket has been deleted")
+    end
+    it "redirects to show project" do 
+      expect(response).to redirect_to "/projects/#{pro1.id}"
+    end
+  end
 end
