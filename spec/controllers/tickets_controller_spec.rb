@@ -54,4 +54,39 @@ RSpec.describe TicketsController, :type => :controller do
       end
     end
   end
+
+  describe "PUT#update" do 
+    context "with valid input" do 
+    	before do 
+    		pro1 = FactoryGirl.create(:project)
+        tic1 = FactoryGirl.create(:ticket, project_id: pro1.id)
+        put :update, {id: tic1, ticket:{title: "another one"}, project_id: tic1.project_id}
+      end
+      it "updates the record" do 
+        expect(Ticket.first.title).to eq("another one")
+      end
+      it "sets a flash success message" do 
+      	expect(flash[:notice]).to be_present
+      end
+      it "redirects to ticket page" do 
+      	expect(response).to redirect_to '/projects/1/tickets/1'
+      end
+    end 
+    context "with invalid input" do 
+    	let (:pro1) {FactoryGirl.create(:project)}
+    	let (:tic1) {FactoryGirl.create(:ticket, project_id: pro1.id)}
+      before do 
+        put :update, {id: tic1, ticket:{title: ""}, project_id: tic1.project_id}
+      end
+      it "does not update the record" do 
+        expect(Ticket.first).to eq(tic1)
+      end
+      it "sets an error message" do 
+      	expect(flash[:alert]).to be_present
+      end
+      it "renders the edit page" do 
+      	expect(response).to render_template :edit
+      end
+    end
+  end
 end

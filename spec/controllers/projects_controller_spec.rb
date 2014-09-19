@@ -73,18 +73,18 @@ RSpec.describe ProjectsController, :type => :controller do
 
 	describe "PUT#update" do 
     context "with correct input" do 
+      let(:pro1) {FactoryGirl.create(:project)}
     	before do 
-        pro1 = FactoryGirl.create(:project)
         put :update, {id: pro1, project: {name: "goggelwopp"}}
     	end
       it "updates the record" do 
-      	pro1 = FactoryGirl.create(:project)
+      	expect(Project.first.name).to eq("goggelwopp")
       end
       it "sets a success message" do 
-      	pro1 = FactoryGirl.create(:project)
+      	expect(flash[:notice]).to be_present
       end
       it "redirects to show" do 
-      	pro1 = FactoryGirl.create(:project)
+      	expect(response).to redirect_to '/projects/1'
       end
     end
 
