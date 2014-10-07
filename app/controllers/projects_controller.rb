@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   before_action :find_project, only: [:show,:edit,:update,:destroy]
-  before_action :authorize_admin!, only: [:new]#except: [:index, :show]
+  before_action :authorize_admin!, except: [:index, :show]
   require 'pry'
 	def index
     @projects = Project.all
