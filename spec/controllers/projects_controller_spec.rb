@@ -10,9 +10,29 @@ RSpec.describe ProjectsController, :type => :controller do
 		end
 	end
 	describe "GET#new" do 
-		it "assigns project to be a new instance of class Project" do
-      get :new
-      expect(assigns(:project)).to be_instance_of(Project)
+    context "with admin signed in" do
+      let(:user){FactoryGirl.create(:user, :admin => true)}
+      before {sign_in user}
+
+  		it "assigns project to be a new instance of class Project" do
+        get :new
+        expect(assigns(:project)).to be_instance_of(Project)
+      end
+    end
+
+    context "with standard users" do 
+      let(:user){FactoryGirl.create(:user, :admin => false)}
+      before do 
+        sign_in user
+        get :new
+      end
+
+      it "redirects to rootpath" do 
+        expect(response).to redirect_to(root_path)
+      end
+      it "sets an error message" do
+        expect(flash[:alert]).to eql("You must be an admin to do that!")
+      end
     end
 	end
 
