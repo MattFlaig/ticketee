@@ -1,4 +1,6 @@
-<%= link_to "new Project", new_project_path %>
+<%= admins_only do %>
+  <%= link_to "new Project", new_project_path %>
+<% end %>
 
 <h2>Projects</h2>
 <ul>
@@ -7,3 +9,5 @@
 	<% end %>
 </ul>
 </br>
+
+

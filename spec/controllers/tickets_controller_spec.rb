@@ -2,9 +2,14 @@ require 'rails_helper'
 
 RSpec.describe TicketsController, :type => :controller do
   describe "GET#new" do 
+    let(:user){FactoryGirl.create(:user)}
+    before do
+      pro1 = FactoryGirl.create(:project)
+      sign_in user
+    end
     it "sets ticket to be an instance of class Ticket" do 
     	pro1 = FactoryGirl.create(:project)
-      get :new, project_id: pro1.id
+      get :new, project_id: pro1.id, user_id: user.id
       expect(assigns[:ticket]).to be_instance_of(Ticket)
     end
   end
@@ -19,11 +24,14 @@ RSpec.describe TicketsController, :type => :controller do
   end
 
   describe "POST#create" do 
+
     context "with valid input" do 
     	let (:pro1) {FactoryGirl.create(:project)}
+      let(:user){FactoryGirl.create(:user)}
     	before do 
+        sign_in user 
       	tic1 = FactoryGirl.attributes_for(:ticket)
-      	post :create, ticket: tic1, project_id: pro1.id
+      	post :create, ticket: tic1, project_id: pro1.id, user_id: user.id
     	end
       it "creates the ticket" do 
       	expect(Ticket.count).to eq(1)
@@ -39,9 +47,12 @@ RSpec.describe TicketsController, :type => :controller do
       end
     end
     context "with invalid input" do
+      let(:user){FactoryGirl.create(:user)}
+
     	before do 
+        sign_in user
     		pro1 = FactoryGirl.create(:project)
-      	post :create, ticket: {title: "invalid"}, project_id: pro1.id
+      	post :create, ticket: {title: "invalid"}, project_id: pro1.id, user_id: user.id
       end
       it "does not create a ticket" do 
         expect(Ticket.count).to eq(0)
@@ -57,9 +68,12 @@ RSpec.describe TicketsController, :type => :controller do
 
   describe "PUT#update" do 
     context "with valid input" do 
+      let(:user){ FactoryGirl.create(:user)}
+      
     	before do 
+        sign_in user
     		pro1 = FactoryGirl.create(:project)
-        tic1 = FactoryGirl.create(:ticket, project_id: pro1.id)
+        tic1 = FactoryGirl.create(:ticket, project_id: pro1.id, user_id: user.id)
         put :update, {id: tic1, ticket:{title: "another one"}, project_id: tic1.project_id}
       end
       it "updates the record" do 
@@ -74,8 +88,10 @@ RSpec.describe TicketsController, :type => :controller do
     end 
     context "with invalid input" do 
     	let (:pro1) {FactoryGirl.create(:project)}
-    	let (:tic1) {FactoryGirl.create(:ticket, project_id: pro1.id)}
+      let (:user) {FactoryGirl.create(:user)}
+    	let (:tic1) {FactoryGirl.create(:ticket, project_id: pro1.id, user_id: user.id)}
       before do 
+        sign_in user
         put :update, {id: tic1, ticket:{title: ""}, project_id: tic1.project_id}
       end
       it "does not update the record" do 
@@ -92,9 +108,12 @@ RSpec.describe TicketsController, :type => :controller do
 
   describe "DELETE#destroy" do 
   	let (:pro1) {FactoryGirl.create(:project)}
+    let(:user) {FactoryGirl.create(:user)}
+
   	before do 
-      tic1 = FactoryGirl.create(:ticket, project_id: pro1.id)
-      delete :destroy, {id: tic1, ticket: {title: tic1.title, description: tic1.description}, project_id: tic1.project_id} 
+      sign_in user
+      tic1 = FactoryGirl.create(:ticket, project_id: pro1.id, user_id: user.id)
+      delete :destroy, {id: tic1, ticket: {title: tic1.title, description: tic1.description}, project_id: tic1.project_id, user_id: user.id}
     end
     it "deletes the record" do 
       expect(Ticket.count).to eq(0)
