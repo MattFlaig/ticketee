@@ -83,14 +83,39 @@ RSpec.describe Admin::UsersController, :type => :controller do
   	context "with admin signed in" do 
   		context "with valid input" do 
 	  		let(:admin){FactoryGirl.create(:user, :admin => true)}
+	  		let(:user1){FactoryGirl.create(:user, :admin => false)}
 	      before do 
 	      	sign_in admin
-	      	user1 = FactoryGirl.attributes_for(:user, :admin => false)
 	        put :update, {id: user1, user: {email: "user@user.com"}}
 	      end
-	      it "updates the user"
-	      it "sets a success message"
-	      it "redirects to admin users path"
+	      it "updates the user" do 
+	      	expect(User.last.email).to eq("user@user.com")
+	      end
+	      it "sets a success message" do 
+	      	expect(flash[:notice]).to be_present
+	      end
+	      it "redirects to admin users path" do 
+	      	expect(response).to redirect_to(admin_users_path)
+	      end
+	    end
+
+	    context "with invalid input" do 
+	    	let(:admin){FactoryGirl.create(:user, :admin => true)}
+	  		let(:user1){FactoryGirl.create(:user, :admin => false)}
+	      before do 
+	      	sign_in admin
+	        put :update, {id: user1, user: {email: ""}}
+	      end
+
+	      it "does not update the user" do 
+	      	expect(User.last.email).to eq(user1.email)
+	      end
+	      it "sets an error message" do 
+	      	expect(flash[:alert]).to be_present
+	      end
+	      it "renders the edit template" do 
+	      	expect(response).to render_template(:edit)
+	      end
 	    end
   	end	
   end
