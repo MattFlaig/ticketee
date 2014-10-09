@@ -141,7 +141,23 @@ RSpec.describe Admin::UsersController, :type => :controller do
 	    end
 
 
-      #context "delete admin"
+      context "delete admin" do 
+      	let(:admin){FactoryGirl.create(:user, admin: true)}
+	    	before do 
+	    	  sign_in admin
+	    	  delete :destroy, {id: admin, user:{email: admin.email, password: admin.password, admin: admin.admin }}
+	    	end
+
+	    	it "does not allow to delete oneself" do 
+	    		expect(User.count).not_to eq(0)
+	    	end
+	    	it "sets an error message" do 
+	    		expect(flash[:alert]).to be_present
+	    	end
+	    	it "redirects to admin user path" do 
+	    		expect(response).to redirect_to(admin_users_path)
+	    	end
+      end
     end
   end
 
