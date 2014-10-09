@@ -120,4 +120,29 @@ RSpec.describe Admin::UsersController, :type => :controller do
   	end	
   end
 
+  describe "DELETE#destroy" do 
+  	context "with admin signed in" do
+	    context "delete standard user" do 
+	    	let(:admin){FactoryGirl.create(:user, admin: true)}
+	    	let(:user1){FactoryGirl.create(:user, admin: false)}
+	    	before do 
+	    	  sign_in admin
+	    	  delete :destroy, {id: user1, user:{email: user1.email, password: user1.password, admin: user1.admin }}
+	    	end
+	      it "deletes the user" do 
+	      	expect(User.count).to eq(1)
+	      end
+	      it "sets a success notice" do 
+	      	expect(flash[:notice]).to be_present
+	      end
+	      it "redirects to admin users path" do 
+	      	expect(response).to redirect_to(admin_users_path)
+	      end	
+	    end
+
+
+      #context "delete admin"
+    end
+  end
+
 end

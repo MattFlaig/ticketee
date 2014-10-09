@@ -32,7 +32,7 @@ class Admin::UsersController < Admin::BaseController
   		user_params.delete(:password)
   		user_params.delete(:password_confirmation)
   	end
-  	set_admin
+  	#set_admin
     if @user.update_attributes(user_params)
     	flash[:notice] = "User has been updated"
     	redirect_to admin_users_path
@@ -62,7 +62,7 @@ class Admin::UsersController < Admin::BaseController
     params.require(:user).permit(:email, :password, :admin)
   end
 
-  def set_admin
-  	@user.admin = user_params[:admin] == "1"
-  end
+  # def set_admin
+  # 	@user.admin = user_params[:admin] == "1"
+  # end
 end
