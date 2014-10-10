@@ -11,13 +11,18 @@ RSpec.describe ProjectsController, :type => :controller do
 	end
 
   describe "GET#show" do 
+    let(:user){FactoryGirl.create(:user, admin: false)}
+    before{sign_in user}
+
     context "with existing projects" do
+      let(:pro1){FactoryGirl.create(:project)}
+
       it"set the project variable" do
-        pro1 = FactoryGirl.create(:project)
         get :show, id: pro1.id
         expect(assigns(:project)).to eq(pro1)
       end
     end
+    
     context "with non-existing projects" do 
       it "displays an error for a missing project" do
         get :show, id: "not-here"
@@ -27,6 +32,19 @@ RSpec.describe ProjectsController, :type => :controller do
       it "redirects to index" do
         get :show, id: "not-here"
         expect(response).to redirect_to(projects_path)
+      end
+    end
+
+    context "with standard users who don't have permission" do
+      let(:pro1){FactoryGirl.create(:project)}
+
+      it "cannot access the show action" do 
+        get :show, id: pro1.id
+        expect(response).to redirect_to(projects_path)
+      end
+      it "sets an error message" do
+        get :show, id: pro1.id
+        expect(flash[:alert]).to eq("The project you were looking for could not be found.")
       end
     end
   end
