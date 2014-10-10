@@ -2,14 +2,38 @@ require 'rails_helper'
 
 RSpec.describe TicketsController, :type => :controller do
   describe "GET#new" do 
-    let(:admin){FactoryGirl.create(:user, admin: true)}
-    let(:pro1){FactoryGirl.create(:project)}
-    before do
-      sign_in admin
+    context "with admins" do 
+      let(:admin){FactoryGirl.create(:user, admin: true)}
+      let(:pro1){FactoryGirl.create(:project)}
+      before do
+        sign_in admin
+      end
+      it "sets ticket to be an instance of class Ticket" do 
+        get :new, project_id: pro1.id, user_id: admin.id
+        expect(assigns[:ticket]).to be_instance_of(Ticket)
+      end
     end
-    it "sets ticket to be an instance of class Ticket" do 
-      get :new, project_id: pro1.id, user_id: admin.id
-      expect(assigns[:ticket]).to be_instance_of(Ticket)
+
+    context "with standard users who have only view permission" do 
+      let(:user){FactoryGirl.create(:user, admin: false)}
+      let(:pro1){FactoryGirl.create(:project)}
+      before do 
+        sign_in user
+        permission = Permission.create(user: user, thing: pro1, action: "view") 
+      end
+
+      it "redirects to show project" do 
+        get :new, project_id: pro1.id
+        expect(response).to redirect_to(pro1)
+      end
+      it "sets an error message" do 
+        get :new, project_id: pro1.id
+        expect(flash[:alert]).to eq("You cannot create tickets on this project.")
+      end 
+    end
+
+    context "with standard users who have permission" do 
+
     end
   end
 
