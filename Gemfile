@@ -13,6 +13,7 @@ gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0',          group: :doc
 gem 'spring',        group: :development
 gem 'devise', '~> 3.0'
+gem 'cancan'
 
 group :test, :development do 
 	gem 'rspec-rails', '~> 3.0'
