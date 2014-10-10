@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe ProjectsController, :type => :controller do
 	describe "GET#index" do 
+    let(:admin){FactoryGirl.create(:user, admin: true)}
+    before{sign_in admin}
 		it "sets the projects variable" do 
       pro1 = FactoryGirl.create(:project)
       pro2 = FactoryGirl.create(:project)
@@ -11,18 +13,18 @@ RSpec.describe ProjectsController, :type => :controller do
 	end
 
   describe "GET#show" do 
-    let(:user){FactoryGirl.create(:user, admin: false)}
-    before{sign_in user}
+    let(:admin){FactoryGirl.create(:user, admin: true)}
+    before{sign_in admin}
 
     context "with existing projects" do
       let(:pro1){FactoryGirl.create(:project)}
 
       it"set the project variable" do
-        get :show, id: pro1.id
+        get :show, id: pro1.id, user_id: admin.id
         expect(assigns(:project)).to eq(pro1)
       end
     end
-    
+
     context "with non-existing projects" do 
       it "displays an error for a missing project" do
         get :show, id: "not-here"
@@ -36,14 +38,16 @@ RSpec.describe ProjectsController, :type => :controller do
     end
 
     context "with standard users who don't have permission" do
+      let(:user){FactoryGirl.create(:user, admin: false)}
+      before{sign_in user}
       let(:pro1){FactoryGirl.create(:project)}
 
       it "cannot access the show action" do 
-        get :show, id: pro1.id
+        get :show, id: pro1.id, user_id: user.id
         expect(response).to redirect_to(projects_path)
       end
       it "sets an error message" do
-        get :show, id: pro1.id
+        get :show, id: pro1.id, user_id: user.id
         expect(flash[:alert]).to eq("The project you were looking for could not be found.")
       end
     end
