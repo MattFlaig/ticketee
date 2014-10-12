@@ -108,7 +108,7 @@ RSpec.describe TicketsController, :type => :controller do
   end
 
   describe "PUT#update" do
-    context "with standard users who do not have permission" do 
+    context "with standard users who do not have update permission" do 
       let(:pro1){FactoryGirl.create(:project)}
       let(:tic1){FactoryGirl.create(:ticket, project_id: pro1.id)}
       let(:user){FactoryGirl.create(:user, admin: false)}
@@ -169,22 +169,43 @@ RSpec.describe TicketsController, :type => :controller do
   end
 
   describe "DELETE#destroy" do 
-  	let (:pro1) {FactoryGirl.create(:project)}
-    let(:admin) {FactoryGirl.create(:user, admin: true)}
+    context "with standard users who do not have delete permission" do 
+      let(:pro1){FactoryGirl.create(:project)}
+      let(:tic1){FactoryGirl.create(:ticket, project_id: pro1.id)}
+      let(:user){FactoryGirl.create(:user, admin: false)}
+      before do 
+        sign_in user
+        permission = Permission.create(user: user, thing: pro1, action: "view") 
+        delete :destroy, {project_id: pro1.id, id: tic1.id} 
+      end
 
-  	before do 
-      sign_in admin
-      tic1 = FactoryGirl.create(:ticket, project_id: pro1.id, user_id: admin.id)
-      delete :destroy, {id: tic1, ticket: {title: tic1.title, description: tic1.description}, project_id: tic1.project_id, user_id: admin.id}
+      it "redirects to project" do 
+        expect(response).to redirect_to(:project)
+      end
+
+      it "sets an error message" do 
+        expect(flash[:alert]).to eq("You cannot delete tickets from this project.")
+      end
     end
-    it "deletes the record" do 
-      expect(Ticket.count).to eq(0)
-    end
-    it "sets a message that the record was deleted" do 
-      expect(flash[:notice]).to eq("Ticket has been deleted")
-    end
-    it "redirects to show project" do 
-      expect(response).to redirect_to "/projects/#{pro1.id}"
+
+    context "with admins" do 
+    	let (:pro1) {FactoryGirl.create(:project)}
+      let(:admin) {FactoryGirl.create(:user, admin: true)}
+
+    	before do 
+        sign_in admin
+        tic1 = FactoryGirl.create(:ticket, project_id: pro1.id, user_id: admin.id)
+        delete :destroy, {project_id: pro1.id, id: tic1.id}
+      end
+      it "deletes the record" do 
+        expect(Ticket.count).to eq(0)
+      end
+      it "sets a message that the record was deleted" do 
+        expect(flash[:notice]).to eq("Ticket has been deleted")
+      end
+      it "redirects to show project" do 
+        expect(response).to redirect_to "/projects/#{pro1.id}"
+      end
     end
   end
 end
