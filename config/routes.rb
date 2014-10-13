@@ -1,9 +1,13 @@
 Rails.application.routes.draw do
   
   namespace :admin do
-    resources :users
     root to: 'base#index'
+    resources :users do 
+      resources :permissions
+    end
   end
+
+  put '/admin/users/:user_id/permissions' to: 'admin/permissions#update', as: update_user_permissions
 
   devise_for :users
   # The priority is based upon order of creation: first created -> highest priority.
