@@ -61,7 +61,7 @@ class TicketsController < ApplicationController
   end
 
   def ticket_params
-  	params.require(:ticket).permit(:title, :description, :project_id, :user_id)
+  	params.require(:ticket).permit(:title, :description, :project_id, :user_id, :asset)
   end
 
   def authorize_create!
