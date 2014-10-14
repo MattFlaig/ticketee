@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     end
   end
 
-  put '/admin/users/:user_id/permissions' to: 'admin/permissions#update', as: update_user_permissions
+  put '/admin/users/:user_id/permissions', to: 'admin/permissions#update', as: :update_user_permissions
 
   devise_for :users
   # The priority is based upon order of creation: first created -> highest priority.

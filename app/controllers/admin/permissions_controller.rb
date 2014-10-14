@@ -1,5 +1,6 @@
 class Admin::PermissionsController < Admin::BaseController
   before_action :find_user
+  require 'pry'
 
   def index
   	@ability = Ability.new(@user)
@@ -8,14 +9,17 @@ class Admin::PermissionsController < Admin::BaseController
 
   def update
     @user.permissions.clear
-    params[:permissions].each do |id,permissions|
-    	project = Project.find(id)
-    	permissions.each do |permission, checked|
-    		Permission.create!(user: @user, thing: project, action: permission)
-    	end
-    end
-    flash[:notice] = "Permissions updated."
-    redirect_to admin_user_permissions_path
+    unless params[:permissions]==nil
+	    params[:permissions].each do |id, permissions|
+	    	project = Project.find(id)
+	    	permissions.each do |permission, checked|
+	    		Permission.create(user: @user, thing: project, action: permission)
+	    	end
+	    end
+      #binding.pry
+	  end
+	  flash[:notice] = "Permissions updated."
+	  redirect_to admin_user_permissions_path
   end
 
   private
@@ -23,5 +27,9 @@ class Admin::PermissionsController < Admin::BaseController
   def find_user
   	@user = User.find(params[:user_id])
   end
+
+  # def permission_params
+  # 	params.require(:permissions).permit(:user, :thing, :action)
+  # end
 
 end
