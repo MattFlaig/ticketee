@@ -5,3 +5,18 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+State.create(
+  :name=> "New",
+  :background => "#85FF00",
+  :color => "white"
+  :default => true)
+State.create(
+  :name => "Open",
+  :background => "#00CFFD",
+  :color => "white")
+State.create(
+  :name => "Closed",
+  :background => "black",
+  :color => "white")
+

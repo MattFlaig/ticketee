@@ -8,9 +8,12 @@ class TicketsController < ApplicationController
 
   def new
   	@ticket = @project.tickets.build
+    @ticket.assets.build
   end
 
   def show
+    @comment = @ticket.comments.build
+    @states = State.all
   end
 
  
