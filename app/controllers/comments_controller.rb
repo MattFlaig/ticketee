@@ -4,6 +4,9 @@ class CommentsController < ApplicationController
 
 	def create 
     @comment = @ticket.comments.build(comment_params.merge(:user => current_user))
+    if cannot=(:"change states", @ticket.project)
+      comment_params.delete(:state_id)
+    end
     if @comment.save
     	flash[:notice] = "Comment has been created."
     	redirect_to [@ticket.project, @ticket]
@@ -21,6 +24,6 @@ class CommentsController < ApplicationController
 	end
 
 	def comment_params
-    params.require(:comment).permit(:text, :user_id, :ticket_id)
+    params.require(:comment).permit(:text, :user_id, :ticket_id, :state_id)
 	end
 end
