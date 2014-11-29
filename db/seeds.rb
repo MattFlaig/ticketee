@@ -20,3 +20,4 @@ State.create(
   :background => "black",
   :color => "white")
 
+#user = User.create(email: 'john@john.com', password: 'johnjohn', admin: true)

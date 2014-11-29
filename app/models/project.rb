@@ -1,5 +1,5 @@
 class Project < ActiveRecord::Base
-	has_many :tickets
+	has_many :tickets, dependent: :destroy
 	has_many :permissions, :as => :thing
 
 	scope :readable_by, lambda { |user|
@@ -11,6 +11,6 @@ class Project < ActiveRecord::Base
 	validates_uniqueness_of :name
 
 	def self.for(user)
-		user.admin? ? Project : Project.readable_by(user)
+		user.admin? ? Project.all : Project.readable_by(user)
 	end
 end

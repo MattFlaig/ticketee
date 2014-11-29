@@ -19,7 +19,7 @@ class Admin::PermissionsController < Admin::BaseController
       #binding.pry
 	  end
 	  flash[:notice] = "Permissions updated."
-	  redirect_to admin_user_permissions_path
+	  redirect_to admin_user_permissions_path(@user)
   end
 
   private

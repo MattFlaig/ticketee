@@ -15,6 +15,8 @@ gem 'spring',        group: :development
 gem 'devise', '~> 3.0'
 gem 'cancan'
 gem 'paperclip'
+# gem 'searcher'
+# gem 'protected_attributes'
 
 group :test, :development do 
 	gem 'rspec-rails', '~> 3.0'
