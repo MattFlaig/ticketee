@@ -4,6 +4,7 @@ class ProjectsController < ApplicationController
   before_action :find_project, only: [:show,:edit,:update,:destroy]
 
   require 'pry'
+  
 	def index
     @projects = Project.for(current_user).all
 	end
@@ -13,6 +14,7 @@ class ProjectsController < ApplicationController
 	end
 
 	def show
+    @tickets = @project.tickets
 	end
 
 	def create
